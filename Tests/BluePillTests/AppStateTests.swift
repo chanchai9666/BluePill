@@ -46,7 +46,7 @@ final class AppStateTests: XCTestCase {
         XCTAssertTrue(state.isActive)
         XCTAssertEqual(state.elapsedSeconds, 0)
         XCTAssertEqual(mock.activateCalled, 1)
-        XCTAssertEqual(state.menuBarTitle, " 00:00:00")
+        XCTAssertEqual(state.menuBarTitle, "00:00:00")
     }
 
     func testStopFreezesTimerValue() {

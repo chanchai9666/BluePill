@@ -29,6 +29,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelega
         self.statusItem = item
         if let button = item.button {
             button.imagePosition = .imageLeft
+            button.font = NSFont.monospacedDigitSystemFont(ofSize: 13, weight: .regular)
             button.action = #selector(togglePopover(_:))
             button.target = self
             self.updateStatusItem()

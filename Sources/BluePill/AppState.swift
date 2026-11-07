@@ -30,7 +30,7 @@ public final class AppState: ObservableObject {
 
     public var menuBarTitle: String {
         if isActive {
-            return " \(formattedElapsedTime)"
+            return formattedElapsedTime
         } else {
             return ""
         }
