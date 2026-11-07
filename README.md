@@ -21,20 +21,6 @@
 
 ---
 
-### 📸 ภาพตัวอย่างการใช้งาน (Screenshots)
-
-<p align="center">
-  <img src="docs/screenshots/menubar-timer.png" alt="Menu Bar Resident & Elapsed Timer" width="620"><br>
-  <em>แถบเมนูบาร์ขณะเปิดใช้งาน พร้อมแสดงเวลานับต่อเนื่องด้วยฟอนต์ Monospace ไม่ขยับสั่น</em>
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/popover-view.jpg" alt="BluePill Popover View" width="360"><br>
-  <em>หน้าต่างควบคุม Popover Card สไตล์โมเดิร์น พร้อมสวิตช์เปิด-ปิด และกล่องคำแนะนำ</em>
-</p>
-
----
-
 ### ✨ คุณสมบัติเด่น (Key Features)
 
 1. **ทำงานบนแถบเมนูบาร์ (Menu Bar Resident):**
@@ -119,20 +105,6 @@ make clean
 
 ### 📌 Overview
 **BluePill** is a lightweight, native macOS menu bar utility built in Swift and SwiftUI specifically optimized for **Apple Silicon (Mac M1 and newer)**. It provides a simple, tactile one-click toggle to keep your Mac and display awake, functioning identically to the native macOS `caffeinate -dis` command, without the need to keep Terminal windows open.
-
----
-
-### 📸 Screenshots
-
-<p align="center">
-  <img src="docs/screenshots/menubar-timer.png" alt="Menu Bar Resident & Elapsed Timer" width="620"><br>
-  <em>Menu Bar resident mode with active zero-jitter elapsed timer</em>
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/popover-view.jpg" alt="BluePill Popover View" width="360"><br>
-  <em>Modern popover card with one-click toggle and MacBook battery advisory</em>
-</p>
 
 ---
 
