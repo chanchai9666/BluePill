@@ -2,12 +2,13 @@ import AppKit
 import SwiftUI
 import Combine
 
-public final class AppDelegate: NSObject, NSApplicationDelegate {
+public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var statusItem: NSStatusItem?
     private var popover: NSPopover?
     private var eventMonitor: Any?
     private var cancellables = Set<AnyCancellable>()
 
+    @MainActor
     public let appState = AppState()
 
     public func applicationDidFinishLaunching(_ notification: Notification) {
@@ -17,17 +18,18 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     public func applicationWillTerminate(_ notification: Notification) {
-        appState.cleanup()
-        if let monitor = eventMonitor {
-            NSEvent.removeMonitor(monitor)
-            eventMonitor = nil
+        Task { @MainActor in
+            appState.cleanup()
         }
+        stopEventMonitor()
     }
 
     private func setupStatusItem() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = item.button {
-            button.title = appState.menuBarTitle
+            Task { @MainActor in
+                button.title = self.appState.menuBarTitle
+            }
             button.action = #selector(togglePopover(_:))
             button.target = self
         }
@@ -38,6 +40,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         let popover = NSPopover()
         popover.contentSize = NSSize(width: 290, height: 260)
         popover.behavior = .transient
+        popover.delegate = self
         popover.contentViewController = NSHostingController(
             rootView: PopoverView(appState: appState, onQuit: {
                 NSApp.terminate(nil)
@@ -47,17 +50,17 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func observeAppState() {
-        // Observe menuBarTitle changes to update the status bar item title
-        appState.objectWillChange
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                DispatchQueue.main.async {
+        Task { @MainActor in
+            appState.objectWillChange
+                .receive(on: RunLoop.main)
+                .sink { [weak self] _ in
                     self?.updateStatusItemTitle()
                 }
-            }
-            .store(in: &cancellables)
+                .store(in: &self.cancellables)
+        }
     }
 
+    @MainActor
     private func updateStatusItemTitle() {
         guard let button = statusItem?.button else { return }
         button.title = appState.menuBarTitle
@@ -80,6 +83,11 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func closePopover(_ sender: AnyObject?) {
         popover?.performClose(sender)
+        stopEventMonitor()
+    }
+
+    // MARK: - NSPopoverDelegate
+    public func popoverDidClose(_ notification: Notification) {
         stopEventMonitor()
     }
 

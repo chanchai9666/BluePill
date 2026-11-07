@@ -106,6 +106,7 @@ public struct PopoverView: View {
                         .foregroundColor(.red)
                 }
                 .buttonStyle(.plain)
+                .keyboardShortcut("q", modifiers: .command)
             }
         }
         .padding(16)

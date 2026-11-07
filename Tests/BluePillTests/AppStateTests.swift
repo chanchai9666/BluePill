@@ -18,6 +18,7 @@ final class MockPowerManager: PowerAssertionManaging {
     }
 }
 
+@MainActor
 final class AppStateTests: XCTestCase {
     func testTimeFormatting() {
         let mock = MockPowerManager()
@@ -65,5 +66,27 @@ final class AppStateTests: XCTestCase {
 
         state.start()
         XCTAssertEqual(state.elapsedSeconds, 0) // Resets to 0 on new start
+    }
+
+    func testRapidStartStopToggling() {
+        let mock = MockPowerManager()
+        let state = AppState(powerManager: mock)
+        for _ in 0..<10 {
+            state.start()
+            state.stop()
+        }
+        XCTAssertFalse(state.isActive)
+        XCTAssertEqual(mock.activateCalled, 10)
+        XCTAssertEqual(mock.deactivateCalled, 10)
+        XCTAssertFalse(mock.isAsserting)
+    }
+
+    func testAnchorTimeBasedCalculation() {
+        let mock = MockPowerManager()
+        let state = AppState(powerManager: mock)
+        // Verify state has startTime property anchored on start
+        state.start()
+        XCTAssertNotNil(state.startTime)
+        state.stop()
     }
 }
