@@ -28,11 +28,12 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelega
     private func setupStatusItem() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = item.button {
-            Task { @MainActor in
-                button.title = self.appState.menuBarTitle
-            }
+            button.imagePosition = .imageLeft
             button.action = #selector(togglePopover(_:))
             button.target = self
+            Task { @MainActor in
+                self.updateStatusItem()
+            }
         }
         self.statusItem = item
     }
@@ -56,22 +57,25 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelega
             appState.objectWillChange
                 .receive(on: RunLoop.main)
                 .sink { [weak self] _ in
-                    self?.updateStatusItemTitle()
+                    self?.updateStatusItem()
                 }
                 .store(in: &self.cancellables)
         }
     }
 
     @MainActor
-    private func updateStatusItemTitle() {
+    private func updateStatusItem() {
         guard let button = statusItem?.button else { return }
+        button.image = PillAsset.menuBarIcon(isActive: appState.isActive)
+
         // If popover is currently shown, do NOT resize/change button.title
         // because changing the button frame while NSPopover is anchored to it
         // causes AppKit to teleport the popover to (0,0) top-left!
         if let popover = popover, popover.isShown {
             return
         }
-        button.title = appState.menuBarTitle
+
+        button.title = appState.isActive ? " \(appState.formattedElapsedTime)" : ""
     }
 
     @objc private func togglePopover(_ sender: AnyObject?) {
@@ -108,7 +112,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelega
         lastCloseTime = Date()
         stopEventMonitor()
         Task { @MainActor in
-            self.updateStatusItemTitle()
+            self.updateStatusItem()
         }
     }
 

@@ -15,10 +15,13 @@ public struct PopoverView: View {
             HStack(alignment: .center, spacing: 10) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(appState.isActive ? Color.blue : Color.gray.opacity(0.3))
-                        .frame(width: 32, height: 32)
-                    Text("💊")
-                        .font(.system(size: 16))
+                        .fill(appState.isActive ? Color.blue.opacity(0.18) : Color.gray.opacity(0.15))
+                        .frame(width: 34, height: 34)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(appState.isActive ? Color.blue.opacity(0.4) : Color.clear, lineWidth: 1)
+                        )
+                    Image(nsImage: PillAsset.createPillImage(size: 24, isActive: appState.isActive))
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
