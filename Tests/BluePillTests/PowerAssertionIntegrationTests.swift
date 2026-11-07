@@ -3,7 +3,8 @@ import XCTest
 
 final class PowerAssertionIntegrationTests: XCTestCase {
     func testSystemAssertionRegistration() throws {
-        let manager = PowerAssertionManager()
+        let testReason = "BluePill-Test-\(ProcessInfo.processInfo.processIdentifier)"
+        let manager = PowerAssertionManager(reason: testReason)
         XCTAssertTrue(manager.activate())
 
         // Run pmset -g assertions and verify our assertion name appears
@@ -20,7 +21,7 @@ final class PowerAssertionIntegrationTests: XCTestCase {
         let output = String(data: data, encoding: .utf8) ?? ""
 
         XCTAssertTrue(
-            output.contains("BluePill keep-awake active (caffeinate -dis)"),
+            output.contains(testReason),
             "pmset assertions should include BluePill assertion: \(output)"
         )
 
@@ -38,8 +39,8 @@ final class PowerAssertionIntegrationTests: XCTestCase {
         let verifyOutput = String(data: verifyData, encoding: .utf8) ?? ""
 
         XCTAssertFalse(
-            verifyOutput.contains("BluePill keep-awake active (caffeinate -dis)"),
-            "pmset assertions should not contain BluePill after deactivation"
+            verifyOutput.contains(testReason),
+            "pmset assertions should not contain BluePill test reason after deactivation"
         )
     }
 }

@@ -29,6 +29,12 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(state.formattedElapsedTime, "00:01:05")
         state.elapsedSeconds = 3661
         XCTAssertEqual(state.formattedElapsedTime, "01:01:01")
+        state.elapsedSeconds = 86400 // 1 day
+        XCTAssertEqual(state.formattedElapsedTime, "1d 00:00:00")
+        state.elapsedSeconds = 90061 // 1 day, 1 hour, 1 minute, 1 sec
+        XCTAssertEqual(state.formattedElapsedTime, "1d 01:01:01")
+        state.elapsedSeconds = 2592000 // 30 days
+        XCTAssertEqual(state.formattedElapsedTime, "30d 00:00:00")
     }
 
     func testStartActivatesAndResetsTimer() {

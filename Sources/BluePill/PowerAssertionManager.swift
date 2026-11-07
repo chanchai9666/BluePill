@@ -9,10 +9,13 @@ public protocol PowerAssertionManaging: AnyObject {
 
 public final class PowerAssertionManager: PowerAssertionManaging {
     private var assertionIDs: [IOPMAssertionID] = []
+    private let reason: CFString
 
     public private(set) var isAsserting: Bool = false
 
-    public init() {}
+    public init(reason: String = "BluePill keep-awake active (caffeinate -dis)") {
+        self.reason = reason as CFString
+    }
 
     deinit {
         deactivate()
@@ -24,7 +27,7 @@ public final class PowerAssertionManager: PowerAssertionManaging {
             return true
         }
 
-        let reason = "BluePill keep-awake active (caffeinate -dis)" as CFString
+        let reason = self.reason
         let assertionTypes: [CFString] = [
             kIOPMAssertionTypePreventUserIdleDisplaySleep as CFString, // -d
             kIOPMAssertionTypePreventUserIdleSystemSleep as CFString,  // -i
