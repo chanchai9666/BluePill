@@ -45,6 +45,7 @@ public struct PopoverView: View {
                     }
                 ))
                 .toggleStyle(.switch)
+                .tint(.green)
                 .labelsHidden()
             }
 
@@ -104,7 +105,7 @@ public struct PopoverView: View {
                 Spacer()
 
                 Button(action: onQuit) {
-                    Text("Quit (⌘Q)")
+                    Text("Quit BluePill (⌘Q)")
                         .font(.system(size: 11, weight: .medium))
                         .foregroundColor(.red)
                 }

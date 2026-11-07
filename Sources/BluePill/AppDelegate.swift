@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 import Combine
 
+@MainActor
 public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var statusItem: NSStatusItem?
     private var popover: NSPopover?
@@ -9,7 +10,6 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelega
     private var cancellables = Set<AnyCancellable>()
     private var lastCloseTime: Date = .distantPast
 
-    @MainActor
     public let appState = AppState()
 
     public func applicationDidFinishLaunching(_ notification: Notification) {
@@ -19,9 +19,8 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelega
     }
 
     public func applicationWillTerminate(_ notification: Notification) {
-        Task { @MainActor in
-            appState.cleanup()
-        }
+        // Guaranteed synchronous release of sleep assertions before process exits
+        appState.cleanup()
         stopEventMonitor()
     }
 
@@ -31,9 +30,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelega
             button.imagePosition = .imageLeft
             button.action = #selector(togglePopover(_:))
             button.target = self
-            Task { @MainActor in
-                self.updateStatusItem()
-            }
+            self.updateStatusItem()
         }
         self.statusItem = item
     }
@@ -45,37 +42,33 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelega
         popover.animates = false // Prevents animation repositioning glitches
         popover.delegate = self
         popover.contentViewController = NSHostingController(
-            rootView: PopoverView(appState: appState, onQuit: {
-                NSApp.terminate(nil)
+            rootView: PopoverView(appState: appState, onQuit: { [weak self] in
+                self?.appState.quit()
             })
         )
         self.popover = popover
     }
 
     private func observeAppState() {
-        Task { @MainActor in
-            appState.objectWillChange
-                .receive(on: RunLoop.main)
-                .sink { [weak self] _ in
-                    self?.updateStatusItem()
-                }
-                .store(in: &self.cancellables)
-        }
+        appState.objectWillChange
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.updateStatusItem()
+            }
+            .store(in: &cancellables)
     }
 
-    @MainActor
     private func updateStatusItem() {
         guard let button = statusItem?.button else { return }
         button.image = PillAsset.menuBarIcon(isActive: appState.isActive)
 
-        // If popover is currently shown, do NOT resize/change button.title
-        // because changing the button frame while NSPopover is anchored to it
-        // causes AppKit to teleport the popover to (0,0) top-left!
+        // If popover is currently shown, do NOT resize button.title to prevent AppKit
+        // from re-anchoring and teleporting the popover to (0,0)
         if let popover = popover, popover.isShown {
             return
         }
 
-        button.title = appState.isActive ? " \(appState.formattedElapsedTime)" : ""
+        button.title = appState.menuBarTitle
     }
 
     @objc private func togglePopover(_ sender: AnyObject?) {
@@ -111,9 +104,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelega
     public func popoverDidClose(_ notification: Notification) {
         lastCloseTime = Date()
         stopEventMonitor()
-        Task { @MainActor in
-            self.updateStatusItem()
-        }
+        self.updateStatusItem()
     }
 
     private func startEventMonitor() {

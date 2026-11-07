@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import Combine
 
@@ -24,9 +25,9 @@ public final class AppState: ObservableObject {
 
     public var menuBarTitle: String {
         if isActive {
-            return "💊 \(formattedElapsedTime)"
+            return " \(formattedElapsedTime)"
         } else {
-            return "💊"
+            return ""
         }
     }
 
@@ -71,6 +72,11 @@ public final class AppState: ObservableObject {
 
     public func cleanup() {
         stop()
+    }
+
+    public func quit() {
+        cleanup()
+        NSApp.terminate(nil)
     }
 
     private func startTimer(from start: Date) {
