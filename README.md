@@ -1,4 +1,8 @@
-# BluePill 💊
+<p align="center">
+  <img src="Resources/AppIcon.iconset/icon_128x128@2x.png" width="96" height="96" alt="BluePill Icon">
+</p>
+
+# BluePill <img src="Resources/blue-pill.png" width="28" height="28" alt="BluePill" style="vertical-align: middle;">
 
 > **Lightweight macOS Menu Bar Keep-Awake Utility (`caffeinate -dis`)**  
 > *โปรแกรมขนาดเล็กบนแถบเมนูบาร์สำหรับป้องกันเครื่อง Mac และหน้าจอดับ (เทียบเท่าคำสั่ง `caffeinate -dis`)*
@@ -17,11 +21,25 @@
 
 ---
 
+### 📸 ภาพตัวอย่างการใช้งาน (Screenshots)
+
+<p align="center">
+  <img src="docs/screenshots/menubar-timer.png" alt="Menu Bar Resident & Elapsed Timer" width="620"><br>
+  <em>แถบเมนูบาร์ขณะเปิดใช้งาน พร้อมแสดงเวลานับต่อเนื่องด้วยฟอนต์ Monospace ไม่ขยับสั่น</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/popover-view.jpg" alt="BluePill Popover View" width="360"><br>
+  <em>หน้าต่างควบคุม Popover Card สไตล์โมเดิร์น พร้อมสวิตช์เปิด-ปิด และกล่องคำแนะนำ</em>
+</p>
+
+---
+
 ### ✨ คุณสมบัติเด่น (Key Features)
 
 1. **ทำงานบนแถบเมนูบาร์ (Menu Bar Resident):**
    - รันในฐานะ Accessory Application (`LSUIElement = true`) ไม่มีไอคอน Dock มากวนใจ
-   - ไอคอนเม็ดยาสีฟ้า-ขาว 💊 สวยงาม คมชัดระดับ Retina บนแถบเมนูบาร์
+   - ไอคอนเม็ดยาสีฟ้า-ขาว <img src="Resources/blue-pill.png" width="16" height="16" alt="BluePill" style="vertical-align: middle;"> สวยงาม คมชัดระดับ Retina บนแถบเมนูบาร์
 2. **ระบบป้องกันเครื่องหลับแบบ Native IOKit:**
    - ทำงานเทียบเท่าคำสั่ง `caffeinate -dis` ครบทั้ง 3 มิติ:
      - ป้องกัน Display Sleep (`-d`)
@@ -104,11 +122,25 @@ make clean
 
 ---
 
+### 📸 Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/menubar-timer.png" alt="Menu Bar Resident & Elapsed Timer" width="620"><br>
+  <em>Menu Bar resident mode with active zero-jitter elapsed timer</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/popover-view.jpg" alt="BluePill Popover View" width="360"><br>
+  <em>Modern popover card with one-click toggle and MacBook battery advisory</em>
+</p>
+
+---
+
 ### ✨ Key Features
 
 1. **Menu Bar Resident:**
    - Runs as an accessory app (`LSUIElement = true`) with zero Dock clutter.
-   - Beautiful Retina-ready custom Blue & White Pill icon 💊 in the menu bar.
+   - Beautiful Retina-ready custom Blue & White Pill icon <img src="Resources/blue-pill.png" width="16" height="16" alt="BluePill" style="vertical-align: middle;"> in the menu bar.
 2. **Native IOKit Sleep Prevention Engine:**
    - Emulates `caffeinate -dis` natively via Apple IOKit Power Assertions:
      - Prevent Display Sleep (`-d`)
