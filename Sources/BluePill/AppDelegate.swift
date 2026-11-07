@@ -7,6 +7,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelega
     private var popover: NSPopover?
     private var eventMonitor: Any?
     private var cancellables = Set<AnyCancellable>()
+    private var lastCloseTime: Date = .distantPast
 
     @MainActor
     public let appState = AppState()
@@ -40,6 +41,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelega
         let popover = NSPopover()
         popover.contentSize = NSSize(width: 290, height: 260)
         popover.behavior = .transient
+        popover.animates = false // Prevents animation repositioning glitches
         popover.delegate = self
         popover.contentViewController = NSHostingController(
             rootView: PopoverView(appState: appState, onQuit: {
@@ -63,6 +65,12 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelega
     @MainActor
     private func updateStatusItemTitle() {
         guard let button = statusItem?.button else { return }
+        // If popover is currently shown, do NOT resize/change button.title
+        // because changing the button frame while NSPopover is anchored to it
+        // causes AppKit to teleport the popover to (0,0) top-left!
+        if let popover = popover, popover.isShown {
+            return
+        }
         button.title = appState.menuBarTitle
     }
 
@@ -71,13 +79,22 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelega
 
         if popover.isShown {
             closePopover(sender)
-        } else {
-            showPopover(button)
+            return
         }
+
+        // If the popover just closed milliseconds ago because user clicked on the status button,
+        // do not reopen immediately.
+        if Date().timeIntervalSince(lastCloseTime) < 0.25 {
+            return
+        }
+
+        showPopover(button)
     }
 
     private func showPopover(_ button: NSStatusBarButton) {
-        popover?.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+        guard let popover = popover else { return }
+        NSApp.activate(ignoringOtherApps: true)
+        popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
         startEventMonitor()
     }
 
@@ -88,7 +105,11 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelega
 
     // MARK: - NSPopoverDelegate
     public func popoverDidClose(_ notification: Notification) {
+        lastCloseTime = Date()
         stopEventMonitor()
+        Task { @MainActor in
+            self.updateStatusItemTitle()
+        }
     }
 
     private func startEventMonitor() {

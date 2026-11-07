@@ -31,6 +31,9 @@ mkdir -p "$RESOURCES_DIR"
 cp "$RELEASE_BIN" "$MACOS_DIR/$APP_NAME"
 chmod +x "$MACOS_DIR/$APP_NAME"
 cp "$PROJECT_ROOT/Resources/Info.plist" "$CONTENTS_DIR/Info.plist"
+if [ -f "$PROJECT_ROOT/Resources/AppIcon.icns" ]; then
+    cp "$PROJECT_ROOT/Resources/AppIcon.icns" "$RESOURCES_DIR/AppIcon.icns"
+fi
 
 echo "==> Signing $APP_NAME.app..."
 codesign --force --deep --sign - "$APP_DIR"

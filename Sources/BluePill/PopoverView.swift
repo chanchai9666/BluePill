@@ -110,6 +110,6 @@ public struct PopoverView: View {
             }
         }
         .padding(16)
-        .frame(width: 290)
+        .frame(width: 290, height: 260)
     }
 }
