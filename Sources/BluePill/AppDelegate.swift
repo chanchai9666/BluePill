@@ -26,13 +26,13 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelega
 
     private func setupStatusItem() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        self.statusItem = item
         if let button = item.button {
             button.imagePosition = .imageLeft
             button.action = #selector(togglePopover(_:))
             button.target = self
             self.updateStatusItem()
         }
-        self.statusItem = item
     }
 
     private func setupPopover() {
